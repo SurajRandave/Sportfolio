@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suraj Randave - Web Developer Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Include EmailJS SDK -->
+    <script type="text/javascript" src="script.js"></script>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>Suraj Shivaji Randave</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Skills</a></li>
+                <li><a href="#">Projects</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+            <button class="btn">Hire Me</button>
+        </nav>
+    </header>
+
+    <section class="intro">
+        <div class="intro-content">
+            <h2>Hello 👋, I'm a Web Developer</h2>
+            <p>I build things for the web. I'm also an app developer and have experience working with APIs.</p>
+            <div class="stats">
+                <div>
+                    <h3>2</h3>
+                    <p>Projects Completed</p>
+                </div>
+                <div>
+                    <h3>Java, HTML5, CSS, DSA Basic, App Developer</h3>
+                    <p>Tech Stack</p>
+                </div>
+            </div>
+        </div>
+        <div class="intro-image">
+            <img src="suraj.jpg" alt="Suraj Randave">
+        </div>
+    </section>
+
+    <section class="about">
+        <h2>About Me</h2>
+        <p>I'm Suraj Shivaji Randave, a passionate web developer with a strong foundation in programming and design.
+            I am always excited to work on new projects that allow me to explore different technologies and expand my
+            skillset. I am also an app developer with experience in building mobile applications.</p>
+    </section>
+
+    <section class="projects">
+        <h2>Projects</h2>
+        <div class="project-list">
+            <div class="project">
+                <h3>Mobile Store Management System</h3>
+                <p>Duration: 3 Months | Technology Used: PHP, HTML, CSS, MySQL</p>
+                <p>Summary: A platform for solving online problems in a mobile store environment.</p>
+            </div>
+            <div class="project">
+                <h3>VelvetVista Fashion House Mobile App</h3>
+                <p>Duration: 1 Month | Technology Used: Android Studio</p>
+                <p>Summary: An online platform for managing a clothing store.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact">
+        <h2>Contact</h2>
+        <p>Email: <a href="mailto:surajrandave3@gmail.com">surajrandave3@gmail.com</a></p>
+        <p>GitHub: <a href="https://github.com/SurajRandave">https://github.com/SurajRandave</a></p>
+    </section>
+
+    <!-- Feedback Section -->
+    <section class="feedback">
+        <h2>Feedback</h2>
+        <p>Your feedback is important to me! It will help me know what improvements are required and guide me in
+            refining my skills and projects.</p>
+        <form id="feedbackForm">
+            <label for="name">Your Name:</label><br>
+            <input type="text" id="name" name="name" required><br><br>
+
+            <label for="email">Your Email:</label><br>
+            <input type="email" id="email" name="email" required><br><br>
+
+            <label for="feedback">Your Feedback:</label><br>
+            <textarea id="feedback" name="feedback" rows="4" required></textarea><br><br>
+
+            <button type="submit" class="btn">Submit Feedback</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Suraj Randave. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript Section -->
+    <script>
+        // Initialize EmailJS
+        emailjs.init('3ZzvdNg22T3wgkt24'); // Replace with your EmailJS User ID
+
+        // Handle form submission
+        document.getElementById('feedbackForm').addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent form refresh
+
+            // Collect form data
+            const formData = {
+                from_name: document.getElementById('name').value, // Matches {{from_name}} in your EmailJS template
+                from_email: document.getElementById('email').value, // Matches {{from_email}}
+                message: document.getElementById('feedback').value, // Matches {{message}}
+            };
+
+            // Send email using EmailJS
+            emailjs.send('service_xkcjz7b', 'template_ftn2bum', formData) // Replace with your Service and Template IDs
+                .then(function (response) {
+                    alert('Feedback sent successfully!');
+                    document.getElementById('feedbackForm').reset(); // Reset form fields
+                })
+                .catch(function (error) {
+                    alert('Failed to send feedback. Please try again later.');
+                    console.error('EmailJS Error:', error);
+                });
+        });
+    </script>
+</body>
+
+</html>
