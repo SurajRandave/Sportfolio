@@ -29,8 +29,10 @@ api.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response?.status === 401 && getToken()) {
       setToken(null)
-      if (window.location.pathname.startsWith('/admin')) {
-        window.location.assign('/admin/login')
+      // BASE_URL keeps this correct when served from a subpath (GitHub Pages).
+      const base = import.meta.env.BASE_URL
+      if (window.location.pathname.startsWith(`${base}admin`.replace('//', '/'))) {
+        window.location.assign(`${base}admin/login`.replace('//', '/'))
       }
     }
     return Promise.reject(error)

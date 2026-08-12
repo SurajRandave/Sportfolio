@@ -1,0 +1,75 @@
+name: Deploy frontend to GitHub Pages
+
+# Builds the React app and publishes it to
+# https://surajrandave.github.io/Sportfolio/
+#
+# The Laravel API is NOT deployed here - GitHub Pages serves static files only.
+# Point VITE_API_URL at wherever the backend is hosted (see DEPLOYMENT.md).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never run two deploys at once; let a newer push supersede an in-flight build.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+
+      - name: Build
+        env:
+          # Repo path on Pages. Change if the repo is ever renamed.
+          VITE_BASE: /Sportfolio/
+          # Set these under Settings -> Secrets and variables -> Actions -> Variables
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_STORAGE_URL: ${{ vars.VITE_STORAGE_URL }}
+          VITE_REVERB_APP_KEY: ${{ vars.VITE_REVERB_APP_KEY }}
+          VITE_REVERB_HOST: ${{ vars.VITE_REVERB_HOST }}
+          VITE_REVERB_PORT: ${{ vars.VITE_REVERB_PORT }}
+          VITE_REVERB_SCHEME: ${{ vars.VITE_REVERB_SCHEME }}
+        run: |
+          if [ -z "$VITE_API_URL" ]; then
+            echo "::error::VITE_API_URL is not set. Add it as an Actions variable pointing at your hosted Laravel API, or the published site will load but show no content."
+            exit 1
+          fi
+          npm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

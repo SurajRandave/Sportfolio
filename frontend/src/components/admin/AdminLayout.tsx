@@ -162,7 +162,7 @@ export function AdminLayout() {
             </span>
 
             <a
-              href="/"
+              href={import.meta.env.BASE_URL}
               target="_blank"
               rel="noreferrer"
               className="text-sm text-ink-400 transition-colors hover:text-ink-100"
