@@ -1,0 +1,27 @@
+# Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
+
+# Dependencies
+/backend/vendor
+/frontend/node_modules
+
+# Environment
+/backend/.env
+/frontend/.env
+/frontend/.env.local
+
+# Build output
+/frontend/dist
+/backend/public/storage
+/backend/storage/*.key
+/backend/storage/app/public/*
+!/backend/storage/app/public/.gitignore
+
+# Local database artefacts
+/backend/database/*.sqlite
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+*.log
