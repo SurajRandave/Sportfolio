@@ -7,9 +7,11 @@ import {
   LogOut,
   Menu,
   MessageSquareQuote,
+  Moon,
   Package,
   Radio,
   Sparkles,
+  Sun,
   User,
   Wrench,
   X,
@@ -17,6 +19,7 @@ import {
 import { useAuth } from '@/context/AuthContext'
 import { getEcho } from '@/lib/echo'
 import { cn } from '@/lib/format'
+import { useTheme } from '@/hooks/useTheme'
 
 const NAV = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
@@ -34,6 +37,7 @@ export function AdminLayout() {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [connected, setConnected] = useState(false)
+  const { theme, toggleTheme } = useTheme()
 
   // Surface the websocket state so it is obvious when Reverb isn't running.
   useEffect(() => {
@@ -98,7 +102,7 @@ export function AdminLayout() {
                   'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors',
                   isActive
                     ? 'bg-brand-500/15 text-brand-200'
-                    : 'text-ink-400 hover:bg-ink-800/60 hover:text-ink-950',
+                    : 'text-ink-400 hover:bg-ink-800/60 hover:text-ink-100',
                 )
               }
             >
@@ -144,6 +148,16 @@ export function AdminLayout() {
           </button>
 
           <div className="ml-auto flex items-center gap-4">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              className="rounded-lg p-2 text-ink-400 transition-colors hover:bg-ink-800/60 hover:text-ink-100"
+            >
+              {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+            </button>
+
             <span
               className={cn(
                 'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs',

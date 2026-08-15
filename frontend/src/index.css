@@ -36,6 +36,64 @@
   --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/*
+ * Light mode — "Parchment + Ember".
+ *
+ * Only the token VALUES are redefined here, so every component that already
+ * speaks in ink/brand/accent flips over without a single class change. The ink
+ * ramp is inverted end for end (950 becomes the page, 100 becomes the type),
+ * which is why `bg-ink-950` still means "page background" in both themes.
+ *
+ * Brand and accent are darkened rather than mirrored: amber that reads well on
+ * near-black drops to ~1.7:1 on white, so the light ramp uses deeper ember
+ * tones that clear 4.5:1 for text and for white-on-brand buttons.
+ */
+html[data-theme='light'] {
+  color-scheme: light;
+
+  --color-ink-50: #0c0a09;
+  --color-ink-100: #1c1917;
+  --color-ink-200: #292524;
+  --color-ink-300: #44403c;
+  --color-ink-400: #57534e;
+  --color-ink-500: #78716c;
+  --color-ink-600: #a8a29e;
+  --color-ink-700: #d6d3d1;
+  --color-ink-800: #e7e5e4;
+  --color-ink-900: #f4f2f0;
+  --color-ink-950: #ffffff;
+
+  --color-brand-300: #d97706;
+  --color-brand-400: #c2560a;
+  --color-brand-500: #b45309;
+  --color-brand-600: #92400e;
+
+  --color-accent-400: #ea580c;
+  --color-accent-500: #c2410c;
+
+  /*
+   * Status hues keep their meaning (green = good, rose = destructive) but the
+   * light shades the dark UI uses for text sit at ~1.5:1 on white. Redefining
+   * the shades themselves fixes every `text-emerald-300` in the app at once.
+   * Only the text shades move — the 500s used for `/10` fills and `/30`
+   * borders are left alone so tinted chips look the same in both themes.
+   */
+  --color-emerald-200: #047857;
+  --color-emerald-300: #047857;
+  --color-emerald-400: #059669;
+
+  --color-amber-300: #b45309;
+  --color-amber-400: #d97706;
+
+  --color-rose-200: #be123c;
+  --color-rose-300: #be123c;
+  --color-rose-400: #e11d48;
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+}
+
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -50,7 +108,9 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 5rem;
+    /* Clears the fixed navbar (h-14 = 3.5rem) plus a little breathing room,
+       so an anchored section never lands underneath it. */
+    scroll-padding-top: 4.5rem;
   }
 
   body {
@@ -58,6 +118,9 @@
     color: var(--color-ink-300);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
 
   /* Respect users who ask for less motion. */
@@ -83,14 +146,14 @@
 
 @layer components {
   /*
-   * Full-bleed layout: the page spans 100% of the viewport, with the gutter
-   * scaling on wide screens instead of a fixed centre column.
+   * Full-bleed layout: the page spans 100% of the viewport, with a fixed 40px
+   * gutter at every width rather than one that scales up on wide screens.
    */
   .container-page {
     width: 100%;
     max-width: 100%;
     margin-inline: auto;
-    padding-inline: clamp(1.25rem, 5vw, 6rem);
+    padding-inline: 40px;
   }
 
   /*
@@ -118,5 +181,21 @@
   .panel-hover:hover {
     border-color: color-mix(in srgb, var(--color-brand-500) 45%, transparent);
     background-color: color-mix(in srgb, var(--color-ink-800) 70%, transparent);
+  }
+
+  /*
+   * On near-black a translucent panel separates by being lighter than the page.
+   * On white there is nothing left to be lighter than, so light mode swaps that
+   * cue for an opaque fill and a soft shadow to keep cards off the background.
+   */
+  html[data-theme='light'] .panel {
+    background-color: var(--color-ink-900);
+    border-color: var(--color-ink-700);
+    box-shadow: 0 1px 2px rgb(28 25 23 / 0.04), 0 8px 24px -12px rgb(28 25 23 / 0.12);
+  }
+
+  html[data-theme='light'] .panel-hover:hover {
+    background-color: var(--color-ink-950);
+    box-shadow: 0 1px 2px rgb(28 25 23 / 0.06), 0 12px 32px -14px rgb(180 83 9 / 0.25);
   }
 }

@@ -7,6 +7,7 @@ use App\Models\Profile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
@@ -32,6 +33,9 @@ class ProfileController extends Controller
             'availability_note' => ['nullable', 'string', 'max:190'],
             'meta_title' => ['nullable', 'string', 'max:190'],
             'meta_description' => ['nullable', 'string', 'max:300'],
+            // Goes straight into a CSS object-position, so it is restricted to
+            // a known list rather than accepting arbitrary strings.
+            'avatar_position' => ['nullable', Rule::in(Profile::AVATAR_POSITIONS)],
         ]);
 
         $profile = Profile::current() ?? new Profile;

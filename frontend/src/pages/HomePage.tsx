@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react'
+﻿import { Suspense, lazy, useEffect } from 'react'
 import { AlertTriangle, Loader2 } from 'lucide-react'
 import { Navbar } from '@/components/public/Navbar'
 import { Hero } from '@/components/public/Hero'
@@ -11,6 +11,9 @@ import { Testimonials } from '@/components/public/Testimonials'
 import { Contact } from '@/components/public/Contact'
 import { Footer } from '@/components/public/Footer'
 import { useSite } from '@/hooks/useSite'
+
+/* One fixed dot field behind the whole page — the site's only 3D effect. */
+const FXCanvas = lazy(() => import('@/components/three/ParticleField'))
 
 export function HomePage() {
   const { site, loading, error } = useSite()
@@ -50,6 +53,9 @@ export function HomePage() {
 
   return (
     <>
+      <Suspense fallback={null}>
+        <FXCanvas />
+      </Suspense>
       <Navbar profile={site.profile} />
       <main>
         <Hero site={site} />

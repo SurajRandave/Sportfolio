@@ -1,14 +1,29 @@
-import { Suspense, lazy } from 'react'
+import { useMemo } from 'react'
 import { ArrowRight, Download, Mail, MapPin } from 'lucide-react'
 import { GithubIcon, LinkedinIcon } from '@/components/ui/BrandIcons'
-import { useRichVisuals } from '@/hooks/useRichVisuals'
-import type { SitePayload } from '@/lib/types'
+import { TechPill } from '@/components/ui/TechPill'
+import type { Skill, SitePayload } from '@/lib/types'
 
-const ParticleField = lazy(() => import('@/components/three/ParticleField'))
+/** How many strengths the hero shows before it starts to read as a list. */
+const STRENGTH_LIMIT = 6
 
 export function Hero({ site }: { site: SitePayload }) {
   const { profile, stats } = site
-  const richVisuals = useRichVisuals()
+
+  /*
+   * Drawn from the skills flagged "featured" in the admin, ranked by the
+   * proficiency rating set there (years is a poor proxy for "strongest" — the
+   * longest-held skills here are the foundational ones). Backed by the same
+   * data the Skills section uses, so it stays editable in Admin → Skills
+   * rather than being hardcoded copy that drifts out of date.
+   */
+  const strengths = useMemo(() => {
+    const all = Object.values(site.skills ?? {}).flat() as Skill[]
+    return all
+      .filter((skill) => skill.is_featured)
+      .sort((a, b) => b.proficiency - a.proficiency || b.years - a.years)
+      .slice(0, STRENGTH_LIMIT)
+  }, [site.skills])
 
   const initials = (profile?.full_name ?? 'Suraj Randave')
     .split(' ')
@@ -19,14 +34,12 @@ export function Hero({ site }: { site: SitePayload }) {
   return (
     <section
       id="home"
-      className="relative min-h-[92vh] overflow-hidden pt-32 pb-20 sm:pt-36 sm:pb-28"
+      // Top padding only has to clear the fixed 56px navbar; anything more is
+      // dead space above the hero. min-h is a floor for very short viewports,
+      // not a target — at 92vh it re-inflated the section past its content and
+      // trimming the padding changed nothing.
+      className="relative min-h-[70vh] overflow-hidden pt-16 pb-8 sm:pt-20 sm:pb-10"
     >
-      {richVisuals && (
-        <Suspense fallback={null}>
-          <ParticleField />
-        </Suspense>
-      )}
-
       {/* Warm ambient wash behind the copy. */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-20">
         <div className="absolute left-[12%] top-10 h-[34rem] w-[34rem] rounded-full bg-brand-500/10 blur-[130px]" />
@@ -35,39 +48,59 @@ export function Hero({ site }: { site: SitePayload }) {
 
       <div className="container-page">
         <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.65fr)]">
-          <div className="animate-fade-up">
+          {/* space-y-6 gives every block in this stack the same gap, instead
+              of the per-element mt-5/7/9 the column used to carry. */}
+          <div className="animate-fade-up space-y-6">
             {profile?.is_available_for_freelance && (
-              <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-brand-500/30 bg-brand-500/10 px-3.5 py-1.5 text-xs font-medium text-brand-300">
+              <div className="inline-flex items-center gap-2 rounded-full border border-brand-500/30 bg-brand-500/10 px-3.5 py-1.5 text-xs font-medium text-brand-300">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-400 opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-400" />
                 </span>
-                Available for freelance work
+                Open to work · Freelance &amp; full-time
               </div>
             )}
 
-            <h1 className="text-5xl font-semibold leading-[1.05] tracking-tight text-ink-100 sm:text-7xl xl:text-8xl">
+            {/*
+              Sized off the viewport rather than a fixed per-breakpoint scale so
+              the full name always lands on one line. `nowrap` is what forbids
+              the wrap; the clamp is what keeps that from overflowing the gutter.
+            */}
+            <h1 className="whitespace-nowrap text-[clamp(1.5rem,4.7vw,6.5rem)] font-semibold leading-[1.05] tracking-tight text-ink-100">
               {profile?.full_name ?? 'Suraj Randave'}
             </h1>
 
-            <p className="mt-5 bg-gradient-to-r from-brand-300 via-brand-400 to-accent-500 bg-clip-text text-xl font-medium text-transparent sm:text-3xl">
+            <p className="bg-gradient-to-r from-brand-300 via-brand-400 to-accent-500 bg-clip-text text-xl font-medium text-transparent sm:text-3xl">
               {profile?.headline ?? 'Full-Stack Developer'}
             </p>
 
             {profile?.tagline && (
-              <p className="prose-measure mt-7 text-lg leading-relaxed text-ink-300">
+              <p className="prose-measure text-lg leading-relaxed text-ink-300">
                 {profile.tagline}
               </p>
             )}
 
             {profile?.location && (
-              <p className="mt-6 flex items-center gap-2 text-sm text-ink-400">
+              <p className="flex items-center gap-2 text-sm text-ink-400">
                 <MapPin size={15} />
                 {profile.location}
               </p>
             )}
 
-            <div className="mt-9 flex flex-wrap items-center gap-3">
+            {strengths.length > 0 && (
+              <div>
+                <p className="mb-3 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-500">
+                  Strongest in
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {strengths.map((skill) => (
+                    <TechPill key={skill.id} label={skill.name} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex flex-wrap items-center gap-3">
               <a
                 href="#contact"
                 className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-6 py-3.5 text-sm font-semibold text-ink-950 transition-colors hover:bg-brand-400"
@@ -96,7 +129,7 @@ export function Hero({ site }: { site: SitePayload }) {
               )}
             </div>
 
-            <div className="mt-9 flex items-center gap-5">
+            <div className="flex items-center gap-5">
               {profile?.github_url && (
                 <a
                   href={profile.github_url}
@@ -131,22 +164,25 @@ export function Hero({ site }: { site: SitePayload }) {
             </div>
           </div>
 
-          {/* Portrait */}
-          <div className="relative mx-auto w-full max-w-sm lg:max-w-none">
+          {/* Portrait — circular, so the frame is square and the ring is round. */}
+          <div className="relative mx-auto w-full max-w-sm">
             <div
               aria-hidden
-              className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-brand-500/25 via-accent-500/10 to-transparent blur-2xl"
+              className="absolute -inset-4 rounded-full bg-gradient-to-br from-brand-500/25 via-accent-500/10 to-transparent blur-2xl"
             />
-            <div className="relative overflow-hidden rounded-[1.75rem] border border-ink-700/80 bg-ink-900">
+            <div className="relative overflow-hidden rounded-full border border-ink-700/80 bg-ink-900">
               {profile?.avatar_url ? (
                 <img
                   src={profile.avatar_url}
                   alt={profile.full_name}
                   loading="eager"
-                  className="aspect-[3/4] w-full object-cover object-top"
+                  /* Set in Admin → Profile → Photo focus, so the circular crop
+                     can be aimed at the right part of whatever is uploaded. */
+                  style={{ objectPosition: profile.avatar_position ?? 'top' }}
+                  className="aspect-square w-full object-cover"
                 />
               ) : (
-                <div className="grid aspect-[3/4] w-full place-items-center bg-gradient-to-br from-ink-800 to-ink-900">
+                <div className="grid aspect-square w-full place-items-center bg-gradient-to-br from-ink-800 to-ink-900">
                   <div className="text-center">
                     <span className="grid h-24 w-24 place-items-center rounded-full bg-gradient-to-br from-brand-500 to-accent-500 font-mono text-3xl font-bold text-ink-950">
                       {initials}
@@ -159,21 +195,15 @@ export function Hero({ site }: { site: SitePayload }) {
                   </div>
                 </div>
               )}
-              {/* Bottom fade so the portrait sits into the page. */}
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink-950/85 to-transparent"
-              />
             </div>
           </div>
         </div>
 
-        <dl className="mt-20 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <dl className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-3">
           {[
             { label: 'Years experience', value: `${stats.years_experience}+` },
             { label: 'Projects shipped', value: `${stats.projects}` },
             { label: 'Technologies', value: `${stats.technologies}` },
-            { label: 'Production uptime', value: '99%' },
           ].map((stat) => (
             <div key={stat.label} className="panel rounded-xl p-5">
               <dt className="text-xs uppercase tracking-wide text-ink-500">{stat.label}</dt>

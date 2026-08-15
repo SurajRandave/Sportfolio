@@ -1,15 +1,12 @@
-﻿import { Suspense, lazy, useMemo, useState } from 'react'
+﻿import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, ExternalLink, Star } from 'lucide-react'
 import { GithubIcon } from '@/components/ui/BrandIcons'
 import { Section } from '@/components/ui/Section'
 import { Reveal } from '@/components/ui/Reveal'
 import { TechPill } from '@/components/ui/TechPill'
-import { useRichVisuals } from '@/hooks/useRichVisuals'
 import { cn } from '@/lib/format'
 import type { Project, ProjectCategory } from '@/lib/types'
-
-const ProjectCarousel3D = lazy(() => import('@/components/three/ProjectCarousel3D'))
 
 const FILTERS: { value: ProjectCategory | 'all'; label: string }[] = [
   { value: 'all', label: 'All' },
@@ -21,7 +18,6 @@ const FILTERS: { value: ProjectCategory | 'all'; label: string }[] = [
 
 export function Projects({ projects }: { projects: Project[] }) {
   const [filter, setFilter] = useState<ProjectCategory | 'all'>('all')
-  const richVisuals = useRichVisuals()
 
   // Only offer filters that actually have projects behind them.
   const available = useMemo(() => {
@@ -43,21 +39,6 @@ export function Projects({ projects }: { projects: Project[] }) {
       title="Selected projects"
       description="Real systems in production - a government IoT water monitoring portal, a healthcare SaaS ERP, and client applications."
     >
-      {/*
-       * 3D showcase first, then the filterable grid below it. The grid is the
-       * accessible, crawlable, mobile-friendly source of truth - the carousel
-       * is an enhancement that only mounts on wide screens.
-       */}
-      {richVisuals && (
-        <Suspense
-          fallback={<div className="h-[30rem] w-full sm:h-[34rem]" aria-hidden />}
-        >
-          <div className="mb-14">
-            <ProjectCarousel3D projects={projects} />
-          </div>
-        </Suspense>
-      )}
-
       <div className="mb-8 flex flex-wrap gap-2">
         {available.map((option) => (
           <button

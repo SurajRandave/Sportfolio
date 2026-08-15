@@ -16,6 +16,23 @@
       rel="stylesheet"
     />
     <title>Suraj Randave — Full-Stack Developer</title>
+    <script>
+      /*
+       * Runs before first paint so the page never flashes the wrong theme.
+       * Stamps an explicit data-theme, which is the single source of truth the
+       * useTheme hook reads back on mount.
+       */
+      ;(function () {
+        var theme
+        try {
+          theme = localStorage.getItem('portfolio-theme')
+        } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+        }
+        document.documentElement.dataset.theme = theme
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

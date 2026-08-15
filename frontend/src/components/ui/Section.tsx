@@ -19,9 +19,11 @@ export function Section({
   className,
 }: SectionProps) {
   return (
-    <section id={id} className={cn('py-20 sm:py-28', className)}>
+    // Both neighbours contribute their padding at a boundary, so the visible
+    // gap between two sections is double this: sm:py-10 reads as 80px.
+    <section id={id} className={cn('relative py-8 sm:py-10', className)}>
       <div className="container-page">
-        <header className="mb-12">
+        <header className="mb-8">
           {eyebrow && (
             <p className="mb-3 font-mono text-xs uppercase tracking-[0.2em] text-brand-400">
               {eyebrow}

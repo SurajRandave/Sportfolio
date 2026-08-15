@@ -1,15 +1,25 @@
 import { useMemo, useRef } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
+import { useRichVisuals } from '@/hooks/useRichVisuals'
+import { useTheme } from '@/hooks/useTheme'
 
 const COUNT = 1400
 const RADIUS = 9
 
 /**
  * Drifting point cloud that leans toward the cursor. Purely decorative —
- * it sits behind the hero copy and is hidden from assistive tech.
+ * it sits behind the whole page and is hidden from assistive tech.
  */
-function Points() {
+function Points({
+  hotColor,
+  coolColor,
+  isLight,
+}: {
+  hotColor: string
+  coolColor: string
+  isLight: boolean
+}) {
   const ref = useRef<THREE.Points>(null)
   const { viewport } = useThree()
   const pointer = useRef({ x: 0, y: 0 })
@@ -34,11 +44,11 @@ function Points() {
     return { positions, speeds }
   }, [])
 
-  // Warm amber gradient across the cloud, brighter toward the centre.
+  // Warm gradient across the cloud, brighter toward the centre.
   const colors = useMemo(() => {
     const colors = new Float32Array(COUNT * 3)
-    const hot = new THREE.Color('#fbbf24')
-    const cool = new THREE.Color('#ea580c')
+    const hot = new THREE.Color(hotColor)
+    const cool = new THREE.Color(coolColor)
     const tmp = new THREE.Color()
 
     for (let i = 0; i < COUNT; i++) {
@@ -54,7 +64,7 @@ function Points() {
     }
 
     return colors
-  }, [positions])
+  }, [positions, hotColor, coolColor])
 
   useFrame((state, delta) => {
     const points = ref.current
@@ -87,31 +97,54 @@ function Points() {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
         <bufferAttribute attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
+      {/*
+        Additive blending builds glow by adding light, which only works over a
+        dark page - on white there is no headroom left to add to, so the dots
+        turn into hard speckle. Light mode composites normally instead, at a
+        smaller size and lower opacity so the field reads as a soft texture.
+      */}
       <pointsMaterial
-        size={0.032}
+        size={isLight ? 0.026 : 0.032}
         vertexColors
         transparent
-        opacity={0.85}
+        opacity={isLight ? 0.42 : 0.85}
         sizeAttenuation
         depthWrite={false}
-        blending={THREE.AdditiveBlending}
+        blending={isLight ? THREE.NormalBlending : THREE.AdditiveBlending}
       />
     </points>
   )
 }
 
+/**
+ * The page's single 3D effect: one fixed, full-viewport dot field sitting
+ * behind everything. Fixed rather than per-section so the same cloud carries
+ * across the whole page on one WebGL context, and so it drifts with the
+ * viewport rather than scrolling away with the hero.
+ *
+ * Renders nothing on small screens or under prefers-reduced-motion.
+ */
 export default function ParticleField() {
+  const richVisuals = useRichVisuals()
+  const { theme } = useTheme()
+
+  if (!richVisuals) return null
+
+  // Amber reads on near-black but vanishes on white, so light mode drops to
+  // the deeper ember tones the rest of the light palette uses.
+  const isLight = theme === 'light'
+  const hotColor = isLight ? '#b45309' : '#fbbf24'
+  const coolColor = isLight ? '#c2410c' : '#ea580c'
+
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+    <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
       <Canvas
         camera={{ position: [0, 0, 11], fov: 55 }}
         dpr={[1, 1.75]}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       >
-        <Points />
+        <Points hotColor={hotColor} coolColor={coolColor} isLight={isLight} />
       </Canvas>
-      {/* Fade the field into the page so it never fights the copy. */}
-      <div className="absolute inset-0 bg-gradient-to-b from-ink-950/20 via-transparent to-ink-950" />
     </div>
   )
 }

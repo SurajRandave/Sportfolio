@@ -7,6 +7,23 @@ use Illuminate\Support\Facades\Storage;
 
 class Profile extends Model
 {
+    /**
+     * Allowed values for `avatar_position` — CSS object-position keywords, so
+     * the stored value can be handed straight to the browser. Kept here so the
+     * validator and any future consumer share one list.
+     */
+    public const AVATAR_POSITIONS = [
+        'left top',
+        'top',
+        'right top',
+        'left',
+        'center',
+        'right',
+        'left bottom',
+        'bottom',
+        'right bottom',
+    ];
+
     protected $guarded = ['id'];
 
     protected $appends = ['avatar_url', 'resume_url'];

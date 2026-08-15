@@ -41,7 +41,7 @@ export function SkillsPage() {
   return (
     <ResourcePage<Skill>
       title="Skills"
-      description="Grouped by category on the public site. Proficiency drives the bar width."
+      description="Grouped by category on the public site, showing name and years of use."
       endpoint="/admin/skills"
       singular="Skill"
       fields={FIELDS}
@@ -55,20 +55,6 @@ export function SkillsPage() {
         {
           header: 'Category',
           render: (skill) => <Badge tone="brand">{skill.category}</Badge>,
-        },
-        {
-          header: 'Proficiency',
-          render: (skill) => (
-            <div className="flex items-center gap-3">
-              <div className="h-1.5 w-24 overflow-hidden rounded-full bg-ink-800">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-brand-500 to-accent-500"
-                  style={{ width: `${skill.proficiency}%` }}
-                />
-              </div>
-              <span className="font-mono text-xs text-ink-400">{skill.proficiency}%</span>
-            </div>
-          ),
         },
         {
           header: 'Years',

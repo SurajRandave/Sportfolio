@@ -24,6 +24,8 @@ export interface Profile {
   linkedin_url: string | null
   github_url: string | null
   avatar_url: string | null
+  /** CSS object-position — which part of the photo survives the circular crop. */
+  avatar_position: string | null
   resume_url: string | null
   years_experience: number
   is_available_for_freelance: boolean

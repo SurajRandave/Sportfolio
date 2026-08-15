@@ -196,25 +196,30 @@ export function DashboardPage() {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data.visits_last_14_days}>
-                {/* Recharts takes literal colours, so these mirror the amber
-                    theme tokens in index.css rather than reading them. */}
+                {/* Recharts takes literal colours, but SVG paint and inline
+                    styles both resolve var(), so pointing them at the theme
+                    tokens lets the chart follow light/dark with the page. */}
                 <defs>
                   <linearGradient id="visitFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.4} />
-                    <stop offset="100%" stopColor="#f59e0b" stopOpacity={0} />
+                    <stop offset="0%" stopColor="var(--color-brand-500)" stopOpacity={0.4} />
+                    <stop offset="100%" stopColor="var(--color-brand-500)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="#3a3532" strokeDasharray="3 3" vertical={false} />
+                <CartesianGrid
+                  stroke="var(--color-ink-700)"
+                  strokeDasharray="3 3"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="date"
                   tickFormatter={(value: string) => formatDate(value, true).replace(/ \d{4}/, '')}
-                  stroke="#a8a29e"
+                  stroke="var(--color-ink-400)"
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
                 />
                 <YAxis
-                  stroke="#a8a29e"
+                  stroke="var(--color-ink-400)"
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
@@ -223,18 +228,21 @@ export function DashboardPage() {
                 />
                 <Tooltip
                   contentStyle={{
-                    background: '#17130f',
-                    border: '1px solid #3a3532',
+                    background: 'var(--color-ink-900)',
+                    border: '1px solid var(--color-ink-700)',
                     borderRadius: 8,
                     fontSize: 12,
                   }}
+                  labelStyle={{ color: 'var(--color-ink-100)' }}
+                  itemStyle={{ color: 'var(--color-ink-300)' }}
+                  cursor={{ stroke: 'var(--color-ink-600)' }}
                   labelFormatter={(value) => formatDate(String(value ?? ''), true)}
                 />
                 <Area
                   type="monotone"
                   dataKey="total"
                   name="Visits"
-                  stroke="#fbbf24"
+                  stroke="var(--color-brand-400)"
                   strokeWidth={2}
                   fill="url(#visitFill)"
                 />

@@ -1,7 +1,6 @@
 ﻿import { Activity, ArrowRight, Check, Code, Layout, Server, type LucideIcon } from 'lucide-react'
 import { Section } from '@/components/ui/Section'
 import { Reveal } from '@/components/ui/Reveal'
-import { formatCurrency } from '@/lib/format'
 import type { Service } from '@/lib/types'
 
 const ICONS: Record<string, LucideIcon> = {
@@ -17,14 +16,13 @@ export function Services({ services }: { services: Service[] }) {
   return (
     <Section
       id="services"
-      eyebrow="Freelance"
+      eyebrow="Capabilities"
       title="What I can build for you"
-      description="Available for freelance projects alongside my full-time role. Prices are starting points - tell me the scope and I'll quote properly."
+      description="Open to freelance projects and full-time roles alike. Tell me the scope and I'll take it from there."
     >
       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {services.map((service, i) => {
           const Icon = ICONS[service.icon ?? ''] ?? Code
-          const price = formatCurrency(service.starting_price, service.currency)
 
           return (
             <Reveal key={service.id} delay={i * 80}>
@@ -51,14 +49,8 @@ export function Services({ services }: { services: Service[] }) {
 
                 <div className="mt-6 flex items-end justify-between border-t border-ink-800 pt-4">
                   <div>
-                    {price && (
-                      <p className="text-sm text-ink-400">
-                        From <span className="text-lg font-semibold text-ink-100">{price}</span>
-                        <span className="text-xs"> / {service.price_unit}</span>
-                      </p>
-                    )}
                     {service.delivery_days && (
-                      <p className="mt-0.5 text-xs text-ink-500">
+                      <p className="text-xs text-ink-500">
                         Typically {service.delivery_days} days
                       </p>
                     )}

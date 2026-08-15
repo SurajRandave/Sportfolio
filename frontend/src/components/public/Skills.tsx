@@ -43,30 +43,15 @@ export function Skills({ skills }: { skills: Partial<Record<SkillCategory, Skill
                 {CATEGORY_LABELS[group.category]}
               </h3>
 
-              <ul className="space-y-4">
+              <ul className="space-y-2.5">
                 {group.items.map((skill) => (
-                  <li key={skill.id}>
-                    <div className="mb-1.5 flex items-baseline justify-between gap-2">
-                      <span className="text-sm text-ink-100">{skill.name}</span>
-                      {skill.years > 0 && (
-                        <span className="font-mono text-[0.7rem] text-ink-500">
-                          {skill.years} yr{skill.years === 1 ? '' : 's'}
-                        </span>
-                      )}
-                    </div>
-                    <div
-                      className="h-1.5 overflow-hidden rounded-full bg-ink-800"
-                      role="meter"
-                      aria-valuenow={skill.proficiency}
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                      aria-label={`${skill.name} proficiency`}
-                    >
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-brand-500 to-accent-500 transition-[width] duration-1000 ease-out"
-                        style={{ width: `${skill.proficiency}%` }}
-                      />
-                    </div>
+                  <li key={skill.id} className="flex items-baseline justify-between gap-2">
+                    <span className="text-sm text-ink-100">{skill.name}</span>
+                    {skill.years > 0 && (
+                      <span className="font-mono text-[0.7rem] text-ink-500">
+                        {skill.years} yr{skill.years === 1 ? '' : 's'}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>

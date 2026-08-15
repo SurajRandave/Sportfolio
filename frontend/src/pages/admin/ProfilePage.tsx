@@ -5,6 +5,19 @@ import { PageHeader, Toast } from '@/components/admin/ui'
 import { api, errorMessage, validationErrors } from '@/lib/api'
 import type { Profile } from '@/lib/types'
 
+/* CSS object-position values — must match Profile::AVATAR_POSITIONS on the API. */
+const AVATAR_POSITIONS = [
+  { value: 'left top', label: 'Top left' },
+  { value: 'top', label: 'Top centre' },
+  { value: 'right top', label: 'Top right' },
+  { value: 'left', label: 'Middle left' },
+  { value: 'center', label: 'Centre' },
+  { value: 'right', label: 'Middle right' },
+  { value: 'left bottom', label: 'Bottom left' },
+  { value: 'bottom', label: 'Bottom centre' },
+  { value: 'right bottom', label: 'Bottom right' },
+]
+
 const FIELDS: FieldConfig[] = [
   { name: 'full_name', label: 'Full name', type: 'text', half: true },
   { name: 'headline', label: 'Headline', type: 'text', half: true },
@@ -25,6 +38,14 @@ const FIELDS: FieldConfig[] = [
   { name: 'phone', label: 'Phone', type: 'text', half: true },
   { name: 'location', label: 'Location', type: 'text', half: true },
   { name: 'years_experience', label: 'Years of experience', type: 'number', half: true, min: 0 },
+  {
+    name: 'avatar_position',
+    label: 'Photo focus',
+    type: 'select',
+    half: true,
+    options: AVATAR_POSITIONS,
+    help: 'Which part of your photo stays visible inside the circular hero crop.',
+  },
   { name: 'github_url', label: 'GitHub URL', type: 'text', half: true },
   { name: 'linkedin_url', label: 'LinkedIn URL', type: 'text', half: true },
   { name: 'is_available_for_freelance', label: 'Available for freelance', type: 'toggle', half: true },
@@ -60,6 +81,7 @@ export function ProfilePage() {
       availability_note: data.availability_note ?? '',
       meta_title: data.meta_title ?? '',
       meta_description: data.meta_description ?? '',
+      avatar_position: data.avatar_position ?? 'top',
     })
   }
 
