@@ -23,7 +23,7 @@ RUN mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cac
 
 EXPOSE 10000
 
-CMD php artisan migrate --force && \
-    php artisan db:seed --force && \
-    php artisan storage:link || true && \
+CMD php artisan migrate --force -vvv; \
+    php artisan db:seed --force; \
+    php artisan storage:link || true; \
     php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
