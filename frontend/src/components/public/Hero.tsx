@@ -187,11 +187,7 @@ export function Hero({ site }: { site: SitePayload }) {
                     <span className="grid h-24 w-24 place-items-center rounded-full bg-gradient-to-br from-brand-500 to-accent-500 font-mono text-3xl font-bold text-ink-950">
                       {initials}
                     </span>
-                    <p className="mt-4 px-6 text-xs leading-relaxed text-ink-500">
-                      Upload your photo in
-                      <br />
-                      <span className="text-ink-400">Admin → Profile → Files</span>
-                    </p>
+                   
                   </div>
                 </div>
               )}
