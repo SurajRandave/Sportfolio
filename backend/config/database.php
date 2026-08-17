@@ -79,9 +79,7 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+   'options' => env('DB_OPTIONS'),
         ],
 
         'pgsql' => [
@@ -97,6 +95,9 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
+                'options' => extension_loaded('pdo_pgsql') ? array_filter([
+        PDO::PGSQL_ATTR_DISABLE_PREPARES => false,
+    ]) : [],
         ],
 
         'sqlsrv' => [

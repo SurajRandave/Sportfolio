@@ -2,10 +2,15 @@ import axios, { AxiosError } from 'axios'
 
 const TOKEN_KEY = 'portfolio_admin_token'
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+if (!API_URL) {
+  throw new Error("VITE_API_URL is not configured");
+}
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api',
-  headers: { Accept: 'application/json' },
-})
+  baseURL: API_URL,
+});
 
 export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY)
