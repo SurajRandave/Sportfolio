@@ -1,11 +1,11 @@
-FROM php:8.3-cli
+FROM php:8.5-cli
 
-# Install system packages and PHP extensions
+# Install system packages and PostgreSQL dependencies
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
-    libpq-dev \
     zip \
+    libpq-dev \
     && docker-php-ext-install pdo pdo_pgsql pgsql \
     && rm -rf /var/lib/apt/lists/*
 
@@ -20,7 +20,7 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Create Laravel storage/cache directories
+# Create Laravel writable directories
 RUN mkdir -p \
     storage/framework/cache \
     storage/framework/sessions \
@@ -31,9 +31,7 @@ RUN mkdir -p \
 
 EXPOSE 10000
 
-# Run migrations first.
-# If migration fails, DO NOT run the seeder.
-CMD php artisan migrate --force -vvv && \
+CMD php artisan migrate --force && \
     php artisan db:seed --force && \
-    php artisan storage:link || true; \
+    php artisan storage:link || true && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
